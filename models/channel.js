@@ -1,15 +1,21 @@
 export default (sequelize, DataTypes) => {
   const Channel = sequelize.define('channel', {
     name: DataTypes.STRING,
-    public: DataTypes.BOOLEAN,
+    public: {
+      type: DataTypes.BOOLEAN,
+      defaultVaalue: true,
+    },
   });
 
   Channel.associate = (models) => {
     // 1:M
     Channel.belongsTo(models.Team, {
-      foreignKey: { name: 'teamId', field: 'team_id' },
+      foreignKey: {
+        name: 'teamId',
+        field: 'team_id',
+      },
     });
-    // M:M
+    // N:M
     Channel.belongsToMany(models.User, {
       through: 'channel_member',
       foreignKey: {

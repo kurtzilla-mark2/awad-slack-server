@@ -1,5 +1,4 @@
 import bcrypt from 'bcrypt';
-import _ from 'lodash';
 
 export default (sequelize, DataTypes) => {
   const User = sequelize.define(
@@ -9,10 +8,13 @@ export default (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         unique: true,
         validate: {
-          isAlphanumeric: { args: true, msg: 'The username can only contain letters and numbers' },
+          isAlphanumeric: {
+            args: true,
+            msg: 'The username can only contain letters and numbers',
+          },
           len: {
-            args: [3, 45],
-            msg: 'The username needs to be between 3 and 45 characters',
+            args: [3, 25],
+            msg: 'The username needs to be between 3 and 25 characters long',
           },
         },
       },
@@ -30,8 +32,8 @@ export default (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         validate: {
           len: {
-            args: [3, 100],
-            msg: 'Password must be at least 3 and no more than 100 characters',
+            args: [5, 100],
+            msg: 'The password needs to be between 5 and 100 characters long',
           },
         },
       },
@@ -39,12 +41,9 @@ export default (sequelize, DataTypes) => {
     {
       hooks: {
         afterValidate: async (user) => {
-          const saltRounds = 12;
+          const hashedPassword = await bcrypt.hash(user.password, 12);
           // eslint-disable-next-line no-param-reassign
-          // user.password = await bcrypt.hash(user.password, saltRounds);
-          _.assignIn(user, {
-            password: await bcrypt.hash(user.password, saltRounds),
-          });
+          user.password = hashedPassword;
         },
       },
     },
@@ -53,9 +52,12 @@ export default (sequelize, DataTypes) => {
   User.associate = (models) => {
     User.belongsToMany(models.Team, {
       through: 'member',
-      foreignKey: { name: 'userId', field: 'user_id' },
+      foreignKey: {
+        name: 'userId',
+        field: 'user_id',
+      },
     });
-    // M:M
+    // N:M
     User.belongsToMany(models.Channel, {
       through: 'channel_member',
       foreignKey: {

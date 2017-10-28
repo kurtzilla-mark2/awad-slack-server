@@ -5,13 +5,13 @@ import bcrypt from 'bcrypt';
 export const createTokens = async (user, secret, secret2) => {
   const createToken = jwt.sign(
     {
-      user: _.pick(user, ['id']),
+      user: _.pick(user, ['id', 'username']),
     },
     secret,
     {
       // adjust time accordingly to how sensitive the store info is
       // the more sensitive, the shorter the amount of time
-      expiresIn: '1h',
+      expiresIn: '2h',
     },
   );
 

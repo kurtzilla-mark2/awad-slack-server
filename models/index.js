@@ -1,8 +1,8 @@
 import Sequelize from 'sequelize';
-import decamelize from 'decamelize';
 
 const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, process.env.DB_PASSWORD, {
   dialect: 'postgres',
+  operatorsAliases: Sequelize.Op, // fix deprecation error/warning
   define: {
     underscoredAll: true, // gives us global table name snake_case
     underscored: true, // gives us global auto-generated column names as snake_case (created_at, updated_at)
